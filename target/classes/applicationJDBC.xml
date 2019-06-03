@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+<bean name="dataSource" 
+			class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+	<property name="driverClassName" value="oracle.jdbc.driver.OracleDriver" />
+	<property name="url" value="jdbc:oracle:thin:@192.168.0.130:1521:xe" />
+	<property name="username" value="jsp" />
+	<property name="password" value="1234" />
+</bean>
+
+<bean name="template" class="org.springframework.jdbc.core.JdbcTemplate">
+	<property name="dataSource" ref="dataSource" />
+</bean>
+
+<!-- @Autowired 설정하기 : Namespaces -> context 체크하기 -->
+<context:annotation-config/>
+<!-- com.care.service 경로에 @Service 찾아서 실행해준다. -->
+<context:component-scan base-package="com.care.service"/>
+<bean name="dao" class="com.care.transaction_dao.TicketDAO">
+	<!--
+	TicketDAO.java -> @Autowired 설정으로 대체
+	<property name="template" ref="template"/>
+	<property name="transactionTemplate" ref="transactionTemplate"/>
+	-->
+</bean>
+
+<bean name="ticketServiceImpl" class="com.care.service.TicketServiceImpl"/>
+
+
+
+<bean name="transactionManager"
+	class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+	<property name="dataSource" ref="dataSource"/>
+</bean>
+<bean name="transactionTemplate"
+	class="org.springframework.transaction.support.TransactionTemplate">
+	<property name="transactionManager" ref="transactionManager"/>
+	</bean>	
+</beans>
